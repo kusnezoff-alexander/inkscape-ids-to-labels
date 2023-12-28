@@ -9,5 +9,5 @@ Replace `id`-attribute values with the values of `inkscape:label` within SVGs cr
 # Usage
 
 ```
-cargo run
+cargo run /path/to/input.svg /path/to/output.svg
 ```

@@ -6,21 +6,23 @@ use quick_xml::events::attributes::Attribute;
 use std::io::Cursor;
 use std::{str, fs};
 
-use regex::Regex;
+use std::env;
 
-
-/// Taken from [StackOverflow](https://stackoverflow.com/a/65976629/20675205)
-fn cut_first_and_last_char(s: &str) -> &str {
-    let mut chars = s.chars();
-    chars.next();
-    chars.next_back();
-    chars.as_str()
-}
 
 fn main() {
-    let path = "./my-workplace.svg";
+    let args: Vec<String> = env::args().collect();
 
-    let mut reader = Reader::from_file(path).unwrap(); // xml:&str
+    let input_path;
+    let output_path;
+    if args.len() != 3 {
+        panic!("Usage: `cargo run /path/to/input.svg /path/to/output.svg`")
+    } else {
+        input_path = args[1].clone();
+        output_path = args[2].clone();
+    }
+
+
+    let mut reader = Reader::from_file(input_path).unwrap(); // xml:&str
 
     let mut buf = Vec::new();
 
@@ -49,7 +51,6 @@ fn main() {
                         .map(|a| a.clone().unwrap())
                         .collect::<Vec<Attribute>>().get(0).unwrap().value.clone().into_owned();
                     let inkscape_label_val = String::from_utf8(inkscape_label).unwrap();
-                    // println!("RandomHash2423432422 {inkscape_label_val}");
                     // collect existing attributes
                     elem.extend_attributes(e.attributes()
                         .filter(|a| a.clone().unwrap().key != QName(b"id"))
@@ -82,6 +83,5 @@ fn main() {
     let res_str = str::replace(res_str.as_str(), r#"\n"#, r#"\r"#);
     // 2. Replace `\"` with `"`
     let res_str = str::replace(res_str.as_str(), r#"\""#, r#"""#);
-    println!("{res_str:?}");
-    fs::write("./test2.svg", res_str).unwrap();
+    fs::write(output_path, res_str).unwrap();
 }
