@@ -1,0 +1,8 @@
+[package]
+name = "xmlparser-example"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+quick-xml = "0.31.0"
+regex = "1.10.2"
